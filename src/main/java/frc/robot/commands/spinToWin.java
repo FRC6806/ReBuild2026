@@ -36,9 +36,8 @@ public class spinToWin extends Command {
   private final SwerveRequest.RobotCentric drive = new SwerveRequest.RobotCentric();
   private DoubleSupplier xVelocity, yVelocity;
   /** Creates a new command. */
-  public spinToWin(CommandSwerveDrivetrain s, Shooter sh, DoubleSupplier xVelocity, DoubleSupplier yVelocity) {
+  public spinToWin(CommandSwerveDrivetrain s, DoubleSupplier xVelocity, DoubleSupplier yVelocity) {
     // Use addRequirements() here to declare subsystem dependencies.
-    shoot = sh;
     swerve = s;
     this.xVelocity = xVelocity;
     this.yVelocity = yVelocity;

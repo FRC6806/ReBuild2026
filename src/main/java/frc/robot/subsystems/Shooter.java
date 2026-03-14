@@ -2,12 +2,15 @@
 package frc.robot.subsystems;
 
 
+import java.time.Duration;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.wpilibj.AnalogInput;
@@ -60,10 +63,10 @@ public class Shooter {
         hoodSrx1 = s5;
         hoodSrx2 = s6;
         var talonFXConfigs = new TalonFXConfiguration();
-
+        talonFXConfigs.ClosedLoopRamps.VoltageClosedLoopRampPeriod = 4;
         var slot0Configs = talonFXConfigs.Slot0;
         slot0Configs.kG = 0.5; //.3
-        slot0Configs.kS = 0.6; //.00
+        slot0Configs.kS = 0.0; //.00
         slot0Configs.kV = 0.3; // 0.01
         slot0Configs.kA = 0.3; //0.1
         slot0Configs.kP = 0.75; //4.8
@@ -79,59 +82,51 @@ public class Shooter {
         shooter1.getConfigurator().apply(talonFXConfigs);
         shooter2.getConfigurator().apply(talonFXConfigs);
         
-        shooterMap.put(2.0, 3000.0);
-        shooterMap.put(3.0, 3500.0);
-        shooterMap.put(4.0, 4200.0);
+        shooterMap.put(3.0, 55.0);
+        shooterMap.put(5.0, 70.0);
+        shooterMap.put(7.0, 80.0);
+        // shooterMap.put(3.0, 10.0);
+        // shooterMap.put(5.0, 20.0);
+        // shooterMap.put(7.0, 30.0);
 
     }
     
-    public double shooterRPM() {
-        double numerator = g * distance * distance;
-        double denominator = 2 * Math.pow(Math.cos(theta), 2) * (distance * Math.tan(theta) - deltaH);
-        
-        if (denominator <= 0) {
-            return denominator; // impossible shot at this distance
-        }
-        if (LimelightHelpers.getTV("limelight-bigboy") == false){
-            return 0;
-        }
 
-        double v = Math.sqrt(numerator / denominator);
-        // Convert exit speed to wheel RPM
-        double rpm = (60 * v) / (2 * Math.PI * r);
-        // return rmp as a percentage of max, aka from a range 0-1
 
-        return rpm/6000;
-    }
-
-    public double getRPM(double distance) {
+    public double getRPS() {
         return shooterMap.get(distance);
     }
 
-    public void sSetSpeed(double speed){
-        shooter1.set(speed);
-        shooter2.set(-speed);
+    public void sSetSpeed(double RPS){
+        //setting the motor to reach a speed (rps) from imap
+        //NOTE: Imap MUST be in RPS to retrieve proper values
+        shooter1.setControl(new VelocityVoltage(RPS));
+        shooter2.setControl(new VelocityVoltage(-RPS));
         
     }
 
     public double getSpeed(){
+        //this returns the speed of the motor in rotations per second
         return shooter1.getVelocity().getValueAsDouble();
         
     }
+    public void startShooter(){
+        sSetSpeed(25);
+    }
     public void shoot(){
-        double targetVelocity = .75;
+        double targetVelocity = getRPS();
         sSetSpeed(targetVelocity);
-        if (getSpeed() == targetVelocity){ 
+        if (getSpeed() >= targetVelocity){ 
             fSetSpeed(.5);
             pSetSpeed(.5);
         }
     }
 
-    public void fSetSpeed(double speed){
-        feeder.set(-speed);
+    public void fSetSpeed(double percent){
+        feeder.set(-percent);
     }
-    public void pSetSpeed(double speed){
-        preshooter.set(speed);
+    public void pSetSpeed(double percent){
+        preshooter.set(percent);
     }
     public double getDistance(){
         double tx = LimelightHelpers.getTargetPose3d_CameraSpace("limelight-bigboy").getX();

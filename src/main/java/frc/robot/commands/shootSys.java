@@ -30,7 +30,7 @@ public class shootSys extends SequentialCommandGroup {
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
       new shootTop(shoot),
-      new WaitCommand(4),
+      new WaitCommand(9),
       new preShoot(shoot)
       
     );

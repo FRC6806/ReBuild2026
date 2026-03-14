@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.alignmentMode;
+import frc.robot.commands.runShooter;
 import frc.robot.commands.shootSys;
 import frc.robot.commands.spinToWin;
 import frc.robot.generated.TunerConstants;
@@ -65,9 +66,11 @@ public class RobotContainer {
             drivetrain.applyRequest(() -> idle).ignoringDisable(true)
         );
         //intake
-        joystick.x().whileTrue(new InstantCommand(() -> intake.setWheelSpeed(-0.5)));
+        joystick.x().whileTrue(new InstantCommand(() -> intake.setWheelSpeed(-0.8)));
         joystick.x().onFalse(new InstantCommand(() -> intake.setWheelSpeed(0)));
         joystick.y().onTrue(new InstantCommand(() -> intake.wristExtend()));
+
+        //joystick.b().onTrue(new InstantCommand(() -> intake.wristRetract()));
 
         // joystick.x().whileTrue(new InstantCommand(() -> shoot.moveHood(-1)));
         // joystick.x().onFalse(new InstantCommand(() -> shoot.moveHoo(0)));
@@ -76,8 +79,9 @@ public class RobotContainer {
 
         //joystick.x().whileTrue(new InstantCommand(() -> shoot.shoot(-1,1)));
         //joystick.x().whileFalse(new InstantCommand(() -> shoot.shoodt(0,0)));
-        joystick.leftTrigger().toggleOnTrue(new spinToWin(drivetrain, shoot,()-> -joystick.getLeftY() * MaxSpeed,()-> -joystick.getLeftX() * MaxSpeed));
 
+        joystick.leftTrigger().toggleOnTrue(new spinToWin(drivetrain, ()-> -joystick.getLeftY() * MaxSpeed,()-> -joystick.getLeftX() * MaxSpeed));
+        
         //joystick.leftTrigger().onTrue(new alignmentMode(drivetrain, shoot));
         // joystick.a().onTrue(new InstantCommand(() -> shoot.changeHoodMode()));
         // joystick.b().onTrue(new InstantCommand(() -> shoot.hoodActivate()));
@@ -86,7 +90,7 @@ public class RobotContainer {
         joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        joystick.rightTrigger().onTrue(new shootSys(shoot, intake));
+        joystick.rightTrigger().toggleOnTrue(new runShooter(shoot, joystick, intake));
         // joystick.rightTrigger().onTrue(new InstantCommand(() -> shoot.shoot()));
         // joystick.rightTrigger().onFalse(new InstantCommand(() -> shoot.shoot()));
 
@@ -117,7 +121,7 @@ public class RobotContainer {
         SmartDashboard.putNumber("hood mode", shoot.getHoodMode());
         SmartDashboard.putNumber("analog 1", shoot.getVoltage1());
         SmartDashboard.putNumber("analog 2", shoot.getVoltage2());
-        SmartDashboard.putNumber("rpm", shoot.shooterRPM());
+        SmartDashboard.putNumber("targetRPM", shoot.getRPS());
         SmartDashboard.putNumber("distance", shoot.getDistance());
         SmartDashboard.putNumber("shoot speed", shoot.getSpeed());
     }

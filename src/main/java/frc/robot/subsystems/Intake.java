@@ -15,7 +15,7 @@ public class Intake {
     private TalonFX wrist;
     private TalonFX wheel;
     private static final double startPosition = -2; //change later
-    private static final double endPosition = -10; ///change later
+    private static final double endPosition = -7; ///change later
     //private final CANBus canbus;
     final PositionVoltage m_request = new PositionVoltage(0).withSlot(0);
 
@@ -30,8 +30,8 @@ public class Intake {
         slot0Configs.kG = 0.3; //.3
         slot0Configs.kS = 0; //.00
         slot0Configs.kV = 0.01; // 0.01
-        slot0Configs.kA = 0.01; //0.1
-        slot0Configs.kP = 2.8; //2.8
+        slot0Configs.kA = 0.1; //0.1
+        slot0Configs.kP = .3; //2.8
         slot0Configs.kI = 0; //00
         slot0Configs.kD = 0.1;
 
@@ -39,7 +39,7 @@ public class Intake {
         // Set Motion Magic Expo settings
         var motionMagicConfigs = talonFXConfigs.MotionMagic;
         motionMagicConfigs.MotionMagicCruiseVelocity = 0;
-        motionMagicConfigs.MotionMagicExpo_kV = 0.12; //.12
+        motionMagicConfigs.MotionMagicExpo_kV = 0.05; //.12
         motionMagicConfigs.MotionMagicExpo_kA = 0.1; //.1
 
 
