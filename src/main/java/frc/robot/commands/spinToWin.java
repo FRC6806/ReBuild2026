@@ -45,8 +45,7 @@ public class spinToWin extends Command {
     addRequirements(s);
   }
   public double rotate(){
-    // if (Math.abs(LimelightHelpers.getTX("limelight-bigboy"))>10){
-    if (xVelocity.getAsDouble() != 0.0 || yVelocity.getAsDouble() != 0.0){
+    if (Math.abs(LimelightHelpers.getTX("limelight-bigboy"))>2 && (Math.abs(xVelocity.getAsDouble()) > 0.1 || Math.abs(yVelocity.getAsDouble()) > 0.1)){
       return -(Math.copySign(1.0, LimelightHelpers.getTX("limelight-bigboy")));
     }else{
       return 0;

@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import com.ctre.phoenix6.controls.NeutralOut;
+
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -40,7 +42,7 @@ public class runShooter extends Command {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    shoot.sSetSpeed(0.0);
+    shoot.sSetSpeed(0);
     shoot.pSetSpeed(0);
     shoot.fSetSpeed(0);
     intake.setWheelSpeed(0);

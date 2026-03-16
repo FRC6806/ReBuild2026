@@ -9,9 +9,12 @@ import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -58,6 +61,8 @@ public class Shooter {
         TalonSRX s6 = new TalonSRX(CanID6);
         shooter1 = s1;
         shooter2 = s2;
+        shooter1.setNeutralMode(NeutralModeValue.Coast);
+        shooter2.setNeutralMode(NeutralModeValue.Coast);
         feeder = f;
         preshooter = ps;
         hoodSrx1 = s5;
@@ -82,9 +87,9 @@ public class Shooter {
         shooter1.getConfigurator().apply(talonFXConfigs);
         shooter2.getConfigurator().apply(talonFXConfigs);
         
-        shooterMap.put(3.0, 55.0);
-        shooterMap.put(5.0, 70.0);
-        shooterMap.put(7.0, 80.0);
+        shooterMap.put(3.0, 45.0);
+        shooterMap.put(5.0, 60.0);
+        shooterMap.put(7.0, 75.0);
         // shooterMap.put(3.0, 10.0);
         // shooterMap.put(5.0, 20.0);
         // shooterMap.put(7.0, 30.0);
@@ -104,21 +109,22 @@ public class Shooter {
         shooter2.setControl(new VelocityVoltage(-RPS));
         
     }
-
+    
     public double getSpeed(){
         //this returns the speed of the motor in rotations per second
         return shooter1.getVelocity().getValueAsDouble();
         
     }
-    public void startShooter(){
-        sSetSpeed(25);
+    public void stopShooter(){
+        shooter1.setControl(new NeutralOut());
+        shooter2.setControl(new NeutralOut());
     }
     public void shoot(){
         double targetVelocity = getRPS();
         sSetSpeed(targetVelocity);
         if (getSpeed() >= targetVelocity){ 
             fSetSpeed(.5);
-            pSetSpeed(.5);
+            pSetSpeed(.75);
         }
     }
 
@@ -144,71 +150,12 @@ public class Shooter {
     public void stopHood(){
         hoodSrx1.set(ControlMode.PercentOutput, 0);
     }
-    public int getHoodMode(){
-        return hoodMode;
-    }
-    public void changeHoodMode(){
-        hoodMode += 1;
-        hoodMode %= 3;
-    }
-
-    public void hoodActivate(){
-        if(hoodMode == 0){
-            hoodMinPos();
-        }
-        else if(hoodMode == 1){
-            hoodMidPos();
-        }
-        else{
-            hoodMaxPos();
-        }
-    }
 
     public void moveHood( double speed){
             hoodSrx1.set(ControlMode.PercentOutput, speed);
             hoodSrx2.set(ControlMode.PercentOutput, -speed);
     }
 
-    public void hoodMinPos(){
-        curPosition = (Math.round(m_analog.getVoltage()*10))/10.0;
-        while(curPosition != 0){
-            //go in bobo
-            hoodSrx1.set(ControlMode.PercentOutput, 1);
-            hoodSrx2.set(ControlMode.PercentOutput, -1);
-            curPosition = (Math.round(m_analog.getVoltage()*10))/10.0;
-        }
-        hoodSrx1.set(ControlMode.PercentOutput, 0);
-        hoodSrx2.set(ControlMode.PercentOutput, 0);
-    }
-    public void hoodMidPos(){
-        curPosition = (Math.round(m_analog.getVoltage()*10))/10.0;
-        while(curPosition != 2){
-            if(curPosition > 2){
-                //go in bobo
-                hoodSrx1.set(ControlMode.PercentOutput, 1);
-                hoodSrx2.set(ControlMode.PercentOutput, -1);
-            }
-            else if(curPosition < 2){
-                //go out bobo
-                hoodSrx1.set(ControlMode.PercentOutput, -1);
-                hoodSrx2.set(ControlMode.PercentOutput, 1);
-            }   
-            curPosition = (Math.round(m_analog.getVoltage()*10))/10.0;   
-        }
-        hoodSrx1.set(ControlMode.PercentOutput, 0);
-        hoodSrx2.set(ControlMode.PercentOutput, 0);
-    }
-    public void hoodMaxPos(){
-        curPosition = (Math.round(m_analog.getVoltage()*10))/10.0;
-        while(curPosition !=4){
-            //go out bobo
-            hoodSrx1.set(ControlMode.PercentOutput, -1);
-            hoodSrx2.set(ControlMode.PercentOutput, 1);
-            curPosition = (Math.round(m_analog.getVoltage()*10))/10.0;   
-        }
-        hoodSrx1.set(ControlMode.PercentOutput, 0);
-        hoodSrx2.set(ControlMode.PercentOutput, 0);
-    }
     
 }
 

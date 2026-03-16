@@ -28,6 +28,7 @@ public class Intake {
 
         var talonFXConfigs = new TalonFXConfiguration();
         var slot0Configs = talonFXConfigs.Slot0;
+        talonFXConfigs.MotorOutput.DutyCycleNeutralDeadband = .03;
         slot0Configs.kG = 0.3; //.3
         slot0Configs.kS = 0; //.00
         slot0Configs.kV = 0.01; // 0.01
