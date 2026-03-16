@@ -45,7 +45,8 @@ public class spinToWin extends Command {
     addRequirements(s);
   }
   public double rotate(){
-    if (Math.abs(LimelightHelpers.getTX("limelight-bigboy"))>4){
+    // if (Math.abs(LimelightHelpers.getTX("limelight-bigboy"))>10){
+    if (xVelocity.getAsDouble() != 0.0 || yVelocity.getAsDouble() != 0.0){
       return -(Math.copySign(1.0, LimelightHelpers.getTX("limelight-bigboy")));
     }else{
       return 0;
@@ -66,8 +67,8 @@ public class spinToWin extends Command {
   public void execute() {
     double x = xVelocity.getAsDouble();
     double y = yVelocity.getAsDouble();
-    if(Math.abs(x) < .3) x = 0;
-    if(Math.abs(y) < .3) y = 0;
+    if(Math.abs(x) < .09) x = 0;
+    if(Math.abs(y) < .09) y = 0;
 
     swerve.setControl(drive.withVelocityX(x).withVelocityY(y).withRotationalRate(rotate()));
     }

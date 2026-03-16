@@ -38,7 +38,8 @@ public class RobotContainer {
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
     private final Telemetry logger = new Telemetry(MaxSpeed);
-    private final CommandXboxController joystick = new CommandXboxController(0);
+    private final CommandXboxController driver = new CommandXboxController(0);
+    private final CommandXboxController operator = new CommandXboxController(1);
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     public final Intake intake = new Intake(16,12);
     public final Shooter shoot = new Shooter(11,10,14, 15,18, 17);
@@ -53,9 +54,9 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
-                drive.withVelocityX(-joystick.getLeftY() * MaxSpeed/5) // Drive forward with negative Y (forward)
-                    .withVelocityY(-joystick.getLeftX() * MaxSpeed/5) // Drive left with negative X (left)
-                    .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+                drive.withVelocityX(-operator.getLeftY() * MaxSpeed/5) // Drive forward with negative Y (forward)
+                    .withVelocityY(-operator.getLeftX() * MaxSpeed/5) // Drive left with negative X (left)
+                    .withRotationalRate(-operator.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
             )
         );
 
@@ -66,9 +67,9 @@ public class RobotContainer {
             drivetrain.applyRequest(() -> idle).ignoringDisable(true)
         );
         //intake
-        joystick.x().whileTrue(new InstantCommand(() -> intake.setWheelSpeed(-0.8)));
-        joystick.x().onFalse(new InstantCommand(() -> intake.setWheelSpeed(0)));
-        joystick.y().onTrue(new InstantCommand(() -> intake.wristExtend()));
+        operator.x().whileTrue(new InstantCommand(() -> intake.setWheelSpeed(-0.8)));
+        operator.x().onFalse(new InstantCommand(() -> intake.setWheelSpeed(0)));
+        operator.y().onTrue(new InstantCommand(() -> intake.wristExtend()));
 
         //joystick.b().onTrue(new InstantCommand(() -> intake.wristRetract()));
 
@@ -80,17 +81,17 @@ public class RobotContainer {
         //joystick.x().whileTrue(new InstantCommand(() -> shoot.shoot(-1,1)));
         //joystick.x().whileFalse(new InstantCommand(() -> shoot.shoodt(0,0)));
 
-        joystick.leftTrigger().toggleOnTrue(new spinToWin(drivetrain, ()-> -joystick.getLeftY() * MaxSpeed,()-> -joystick.getLeftX() * MaxSpeed));
+        operator.leftTrigger().toggleOnTrue(new spinToWin(drivetrain, ()-> -operator.getLeftY() * MaxSpeed/5,()-> -operator.getLeftX() * MaxSpeed/5));
         
         //joystick.leftTrigger().onTrue(new alignmentMode(drivetrain, shoot));
         // joystick.a().onTrue(new InstantCommand(() -> shoot.changeHoodMode()));
         // joystick.b().onTrue(new InstantCommand(() -> shoot.hoodActivate()));
 
         // Reset the field-centric heading on left bumper press.
-        joystick.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+        operator.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
         drivetrain.registerTelemetry(logger::telemeterize);
 
-        joystick.rightTrigger().toggleOnTrue(new runShooter(shoot, joystick, intake));
+        operator.rightTrigger().toggleOnTrue(new runShooter(shoot, operator, intake));
         // joystick.rightTrigger().onTrue(new InstantCommand(() -> shoot.shoot()));
         // joystick.rightTrigger().onFalse(new InstantCommand(() -> shoot.shoot()));
 
