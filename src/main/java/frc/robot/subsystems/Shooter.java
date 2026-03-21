@@ -8,6 +8,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -47,7 +48,7 @@ public class Shooter {
     double deltaH = ht - h0;              // height difference (ft)
     double theta = Math.toRadians(55);    // hood angle (radians)
     double r = 4.0 / 12.0;                // wheel radius (ft)
-
+    double speed = 50;
     
 
 
@@ -65,18 +66,24 @@ public class Shooter {
         shooter2.setNeutralMode(NeutralModeValue.Coast);
         feeder = f;
         preshooter = ps;
+        preshooter.setNeutralMode(NeutralModeValue.Coast);
         hoodSrx1 = s5;
         hoodSrx2 = s6;
         var talonFXConfigs = new TalonFXConfiguration();
         talonFXConfigs.ClosedLoopRamps.VoltageClosedLoopRampPeriod = 4;
+                talonFXConfigs.withCurrentLimits(new CurrentLimitsConfigs()
+        .withSupplyCurrentLimit(60).withSupplyCurrentLimitEnable(true)
+        .withStatorCurrentLimit(80).withStatorCurrentLimitEnable(true));
         var slot0Configs = talonFXConfigs.Slot0;
-        slot0Configs.kG = 0.5; //.3
+        //DO NOT CHANGE tuned constants help to adjust and ensure consistency
+        slot0Configs.kG = 0; //.3
         slot0Configs.kS = 0.0; //.00
-        slot0Configs.kV = 0.3; // 0.01
-        slot0Configs.kA = 0.3; //0.1
-        slot0Configs.kP = 0.75; //4.8
-        slot0Configs.kI = 0.2; //00
-        slot0Configs.kD = 0.1;
+        slot0Configs.kV = 0.15; // 0.01
+        slot0Configs.kA = 0.; //0.1
+        slot0Configs.kP = 0.6; //4.8
+        slot0Configs.kI = 0; //00
+        slot0Configs.kD = 1.5;
+        
         var motionMagicConfigs = talonFXConfigs.MotionMagic;
         motionMagicConfigs.MotionMagicCruiseVelocity = 0;
         motionMagicConfigs.MotionMagicExpo_kV = 0.5; //.12
@@ -87,19 +94,18 @@ public class Shooter {
         shooter1.getConfigurator().apply(talonFXConfigs);
         shooter2.getConfigurator().apply(talonFXConfigs);
         
-        shooterMap.put(3.0, 45.0);
-        shooterMap.put(5.0, 60.0);
-        shooterMap.put(7.0, 75.0);
-        // shooterMap.put(3.0, 10.0);
-        // shooterMap.put(5.0, 20.0);
-        // shooterMap.put(7.0, 30.0);
+        shooterMap.put(4.0, 46.0);
+        shooterMap.put(5.0, 51.0); //THIS VALUE IS LITERALLY PERFECT DO NOT CHANGE
+        shooterMap.put(6.0, 53.0);
+        shooterMap.put(7.0, 58.0);
+        shooterMap.put(8.0, 61.0);
 
     }
     
 
 
     public double getRPS() {
-        return shooterMap.get(distance);
+        return shooterMap.get(getDistance());
     }
 
     public void sSetSpeed(double RPS){
@@ -109,24 +115,96 @@ public class Shooter {
         shooter2.setControl(new VelocityVoltage(-RPS));
         
     }
-    
+
+    public void incSpeed(boolean inc){
+        if (inc){
+            speed++;
+        }
+            // shooter1.setControl(new VelocityVoltage(speed));
+            // shooter2.setControl(new VelocityVoltage(-speed));
+    }
+
+    public void decSpeed(boolean dec){
+        if (dec){
+            speed--;
+        }
+            // shooter1.setControl(new VelocityVoltage(speed));
+            // shooter2.setControl(new VelocityVoltage(-speed));
+    }
     public double getSpeed(){
+        return speed;
+    }
+    
+    public double getSSpeed(){
         //this returns the speed of the motor in rotations per second
         return shooter1.getVelocity().getValueAsDouble();
+        
+    }
+    public double getPSpeed(){
+        //this returns the speed of the motor in rotations per second
+        return preshooter.getVelocity().getValueAsDouble();
         
     }
     public void stopShooter(){
         shooter1.setControl(new NeutralOut());
         shooter2.setControl(new NeutralOut());
+        readyCounter =0;
+        isFiring = false;
     }
+    public void stopPreshooter(){
+        preshooter.setControl(new NeutralOut());
+    }
+
+    double readyCounter =0;
+    private boolean isFiring = false;
     public void shoot(){
         double targetVelocity = getRPS();
+        double error = Math.abs(getSSpeed()-targetVelocity);
+        
         sSetSpeed(targetVelocity);
-        if (getSpeed() >= targetVelocity){ 
-            fSetSpeed(.5);
-            pSetSpeed(.75);
+        if (getSSpeed() >= targetVelocity){
+            //fSetSpeed(.2);
+            pSetSpeed(.4);//.4 works :)
+        }
+        if (!isFiring){
+            if (error < 3.0){
+                readyCounter++; 
+            }else{
+                readyCounter = 0;
+            }
+            if (readyCounter > 10){
+                isFiring = true;
+            }
+        }
+        if (isFiring){
+            fSetSpeed(.4); // .4 works too 
         }
     }
+            
+        public void autoShoot(){//4
+        double targetVelocity = getRPS();
+        double error = Math.abs(getSSpeed()-targetVelocity);
+        
+        sSetSpeed(targetVelocity*2+3);
+        if (getSSpeed() >= (targetVelocity*2)+2){
+            //fSetSpeed(.2);
+            pSetSpeed(.4);
+        }
+        if (!isFiring){
+            if (error < 3.0){
+                readyCounter++; 
+            }else{
+                readyCounter = 0;
+            }
+            if (readyCounter > 10){
+                isFiring = true;
+            }
+        }
+        if (isFiring){
+            fSetSpeed(.4);
+        }
+    }
+    
 
     public void fSetSpeed(double percent){
         feeder.set(-percent);

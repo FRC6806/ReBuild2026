@@ -4,21 +4,18 @@
 
 package frc.robot.commands;
 
-import com.ctre.phoenix6.controls.NeutralOut;
-
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class runShooter extends Command {
+public class autoShooter extends Command {
   Shooter shoot;
   Intake intake;
   CommandXboxController jstick;
-  /** Creates a new runShooter. */
-  public runShooter(Shooter s, CommandXboxController j, Intake i) {
+  /** Creates a new autoShooter. */
+  public autoShooter(Shooter s, CommandXboxController j, Intake i) {
     shoot=s;
     jstick=j;
     intake=i;
@@ -27,9 +24,7 @@ public class runShooter extends Command {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
-    
-  }
+  public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -37,7 +32,6 @@ public class runShooter extends Command {
     shoot.shoot();
     intake.setWheelSpeed(-.8);
     //intake.wristShake();
-    
   }
 
   // Called once the command ends or is interrupted.

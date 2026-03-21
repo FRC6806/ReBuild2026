@@ -45,11 +45,12 @@ public class spinToWin extends Command {
     addRequirements(s);
   }
   public double rotate(){
-    if (Math.abs(LimelightHelpers.getTX("limelight-bigboy"))>2 && (Math.abs(xVelocity.getAsDouble()) > 0.1 || Math.abs(yVelocity.getAsDouble()) > 0.1)){
+    if (Math.abs(LimelightHelpers.getTX("limelight-bigboy"))>4 ){
       return -(Math.copySign(1.0, LimelightHelpers.getTX("limelight-bigboy")));
     }else{
       return 0;
     }
+    
     // double value = -LimelightHelpers.getTX("limelight-bigboy");
     // if(Math.abs(value) < 0.5) value = 0;
     // return value;
