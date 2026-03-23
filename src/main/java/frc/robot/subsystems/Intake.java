@@ -73,9 +73,9 @@ public class Intake {
     public void wristShake() {
         double currentTime = Timer.getFPGATimestamp();
         if((currentTime % 2) > 1 ) {
-            wrist.setControl(m_request.withPosition(-2));
+            wrist.setControl(m_request.withPosition(-1));
         } else {
-            wristExtend();
+            wrist.setControl(m_request.withPosition(-4));
         }
 
     }

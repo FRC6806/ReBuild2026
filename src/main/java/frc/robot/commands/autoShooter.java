@@ -40,7 +40,7 @@ public class autoShooter extends Command {
     shoot.stopShooter();
     shoot.stopPreshooter();
     shoot.fSetSpeed(0);
-    intake.setWheelSpeed(0);
+    //intake.setWheelSpeed(0);
   }
 
   // Returns true when the command should end.

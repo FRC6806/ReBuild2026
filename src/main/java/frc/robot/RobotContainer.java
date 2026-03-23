@@ -62,8 +62,8 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
-                drive.withVelocityX(-driver.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-                    .withVelocityY(-driver.getLeftX() * MaxSpeed) // Drive left with negative X (left) filterY.calculate
+                drive.withVelocityX(driver.getLeftY() * MaxSpeed/2) // Drive forward with negative Y (forward)
+                    .withVelocityY(driver.getLeftX() * MaxSpeed/2) // Drive left with negative X (left) filterY.calculate
                     .withRotationalRate(-driver.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
             )
         );
@@ -77,8 +77,9 @@ public class RobotContainer {
         //driver.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
         driver.rightTrigger().toggleOnTrue(new runShooter(shoot, driver, intake));
         driver.leftTrigger().toggleOnTrue(new spinToWin(drivetrain, ()-> -driver.getLeftY() * MaxSpeed/5,()-> -driver.getLeftX() * MaxSpeed/5));
-        driver.x().onTrue(new InstantCommand(() -> shoot.incSpeed(true)));
-        driver.y().onFalse(new InstantCommand(() -> shoot.decSpeed(true)));
+        driver.x().toggleOnTrue(new InstantCommand(() -> intake.wristShake()));
+        driver.y().onTrue(new InstantCommand(() -> shoot.incSpeed(true)));
+        driver.a().onFalse(new InstantCommand(() -> shoot.decSpeed(true)));
 
         operator.x().whileTrue(new InstantCommand(() -> intake.setWheelSpeed(-0.8)));
         operator.x().onFalse(new InstantCommand(() -> intake.setWheelSpeed(0)));
@@ -86,7 +87,10 @@ public class RobotContainer {
         //operator.b().onTrue(new InstantCommand(()-> intake.wristRetract()));
         operator.rightBumper().whileTrue(Commands.run(()-> intake.wristShake()));
 
-        // joystick.x().whileTrue(new InstantCommand(() -> shoot.moveHood(-1)));
+        operator.a().whileTrue(new InstantCommand(() -> shoot.pSetSpeed(.5)));
+        operator.a().whileFalse(new InstantCommand(() -> shoot.pSetSpeed(0)));
+        operator.b().whileTrue(new InstantCommand(() -> shoot.fSetSpeed(.5)));
+        operator.b().whileFalse(new InstantCommand(() -> shoot.fSetSpeed(0)));
         // joystick.x().onFalse(new InstantCommand(() -> shoot.moveHoo(0)));
         // joystick.y().whileTrue(new InstantCommand(() -> shoot.moveHood(1)));
         // joystick.y().onFalse(new InstantCommand(() -> shoot.moveHood(0)));

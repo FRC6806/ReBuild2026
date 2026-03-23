@@ -35,7 +35,7 @@ public class runShooter extends Command {
   @Override
   public void execute() {
     shoot.shoot();
-    intake.setWheelSpeed(-.8);
+    //intake.setWheelSpeed(-.8);
     //intake.wristShake();
     
   }
@@ -46,7 +46,7 @@ public class runShooter extends Command {
     shoot.stopShooter();
     shoot.stopPreshooter();
     shoot.fSetSpeed(0);
-    intake.setWheelSpeed(0);
+    //intake.setWheelSpeed(0);
   }
 
   // Returns true when the command should end.

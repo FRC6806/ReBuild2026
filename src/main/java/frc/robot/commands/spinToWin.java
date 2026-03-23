@@ -59,7 +59,7 @@ public class spinToWin extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    LimelightHelpers.setPipelineIndex("limelight-bigboy",1);
+    LimelightHelpers.setPipelineIndex("limelight-bigboy",0);
     //new shootSys();
   }
   // Called every time the scheduler runs while the command is scheduled.
