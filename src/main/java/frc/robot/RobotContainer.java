@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.autoShooter;
 import frc.robot.commands.runShooter;
+import frc.robot.commands.shootIntake;
 import frc.robot.commands.spinToWin;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -47,8 +48,12 @@ public class RobotContainer {
     public final Intake intake = new Intake(16,12);
     public final Shooter shoot = new Shooter(11,10,14, 15,18, 17);
 
-    private final SlewRateLimiter filterX = new SlewRateLimiter(MaxSpeed/5);
-    private final SlewRateLimiter filterY = new SlewRateLimiter(MaxSpeed/5);
+    private final SlewRateLimiter filterX = new SlewRateLimiter(MaxSpeed / (0.3));
+    private final SlewRateLimiter filterY = new SlewRateLimiter(MaxSpeed / (0.3));
+
+    private double maxSpeed = MaxSpeed;
+
+    private double slowMaxSpeed = MaxSpeed/3;
 
 
     public RobotContainer() {
@@ -59,11 +64,21 @@ public class RobotContainer {
     private void configureBindings() {
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
+
+
+        driver.leftBumper().onTrue(Commands.runOnce(()-> {
+            if(maxSpeed == (MaxSpeed / 1.5)) {
+                maxSpeed = slowMaxSpeed;
+            } else {
+                maxSpeed = MaxSpeed / 1.5;
+            }
+        }));
+
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
-                drive.withVelocityX(driver.getLeftY() * MaxSpeed/2) // Drive forward with negative Y (forward)
-                    .withVelocityY(driver.getLeftX() * MaxSpeed/2) // Drive left with negative X (left) filterY.calculate
+                drive.withVelocityX(filterX.calculate(driver.getLeftY() * maxSpeed)) // Drive forward with negative Y (forward)
+                    .withVelocityY(filterY.calculate(driver.getLeftX() * maxSpeed)) // Drive left with negative X (left) filterY.calculate
                     .withRotationalRate(-driver.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
             )
         );
@@ -74,14 +89,15 @@ public class RobotContainer {
         RobotModeTriggers.disabled().whileTrue(
             drivetrain.applyRequest(() -> idle).ignoringDisable(true)
         );
-        //driver.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
-        driver.rightTrigger().toggleOnTrue(new runShooter(shoot, driver, intake));
+        driver.start().and(driver.back()).onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+        //driver.rightTrigger().toggleOnTrue(new runShooter(shoot, driver, intake));
+        driver.rightTrigger().toggleOnTrue(new shootIntake(shoot, driver, intake));
         driver.leftTrigger().toggleOnTrue(new spinToWin(drivetrain, ()-> -driver.getLeftY() * MaxSpeed/5,()-> -driver.getLeftX() * MaxSpeed/5));
         driver.x().toggleOnTrue(new InstantCommand(() -> intake.wristShake()));
-        driver.y().onTrue(new InstantCommand(() -> shoot.incSpeed(true)));
-        driver.a().onFalse(new InstantCommand(() -> shoot.decSpeed(true)));
+        // driver.y().onTrue(new InstantCommand(() -> shoot.incSpeed(true)));
+        // driver.a().onFalse(new InstantCommand(() -> shoot.decSpeed(true)));
 
-        operator.x().whileTrue(new InstantCommand(() -> intake.setWheelSpeed(-0.8)));
+        operator.x().whileTrue(new InstantCommand(() -> intake.setWheelSpeed(-0.75)));
         operator.x().onFalse(new InstantCommand(() -> intake.setWheelSpeed(0)));
         operator.y().onTrue(new InstantCommand(() -> intake.wristExtend()));
         //operator.b().onTrue(new InstantCommand(()-> intake.wristRetract()));
@@ -110,11 +126,10 @@ public class RobotContainer {
     }
 
     public void putElastic(){
-        SmartDashboard.putNumber("analog 1", shoot.getVoltage1());
-        SmartDashboard.putNumber("analog 2", shoot.getVoltage2());
         SmartDashboard.putNumber("targetRPM", shoot.getRPS());
         SmartDashboard.putNumber("distance", shoot.getDistance());
-        SmartDashboard.putNumber("shoot speed", shoot.getSSpeed());
+        SmartDashboard.putNumber("Right shoot speed", shoot.getRightSpeed());
+        SmartDashboard.putNumber("Left shoot speed", shoot.getLeftSpeed());
         SmartDashboard.putNumber("Intake position", intake.getIntakePosition());
         SmartDashboard.putNumber("Shoot Inc", shoot.getSpeed());
 

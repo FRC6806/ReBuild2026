@@ -4,50 +4,36 @@
 
 package frc.robot.commands;
 
-import com.ctre.phoenix6.controls.NeutralOut;
-
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Shooter;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class runShooter extends Command {
-  Shooter shoot;
+public class intakeShake extends Command {
+  /** Creates a new intakeShake. */
   Intake intake;
-  CommandXboxController jstick;
-  /** Creates a new runShooter. */
-  public runShooter(Shooter s, CommandXboxController j) {
-    shoot=s;
-    jstick=j;
-    //intake=i;
+  public intakeShake(Intake i) {
+    intake=i;
     // Use addRequirements() here to declare subsystem dependencies.
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-
+    intake.setWheelSpeed(-.4);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    shoot.shoot();
-    //intake.setWheelSpeed(-.8);
-    //intake.wristShake();
-
-    
+    //intake.wristMove();
+    intake.wristShake();
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    shoot.stopShooter();
-    shoot.stopPreshooter();
-    shoot.fSetSpeed(0);
-    //intake.setWheelSpeed(0);
+    intake.setWheelSpeed(0);
+    
   }
 
   // Returns true when the command should end.

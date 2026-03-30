@@ -13,6 +13,8 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
@@ -20,7 +22,7 @@ public class Intake {
     private TalonFX wrist;
     private TalonFX wheel;
     private static final double startPosition = 0; //change later
-    private static final double endPosition = -4.2; ///change later
+    private static final double endPosition = -4; ///change later
     //private final CANBus canbus;
     final PositionVoltage m_request = new PositionVoltage(0).withSlot(0);
 
@@ -33,8 +35,8 @@ public class Intake {
 
         var talonFXConfigs = new TalonFXConfiguration();
         talonFXConfigs.withCurrentLimits(new CurrentLimitsConfigs()
-        .withSupplyCurrentLimit(60).withSupplyCurrentLimitEnable(true)
-        .withStatorCurrentLimit(80).withStatorCurrentLimitEnable(true));
+        .withSupplyCurrentLimit(40).withSupplyCurrentLimitEnable(true)
+        .withStatorCurrentLimit(60).withStatorCurrentLimitEnable(true));
         var slot0Configs = talonFXConfigs.Slot0;
         talonFXConfigs.MotorOutput.DutyCycleNeutralDeadband = .03;
         slot0Configs.kG = 0.45; //.3
@@ -66,6 +68,10 @@ public class Intake {
     public void wristExtend(){
         wrist.setControl(m_request.withPosition(endPosition));
     }
+
+    public Command wristDown() {
+        return Commands.run(()-> wristExtend());
+    }
     public void wristRetract(){
         wrist.setControl(m_request.withPosition(startPosition));
     }
@@ -79,7 +85,15 @@ public class Intake {
         }
 
     }
-
+    public void wristMove(){
+        double currentTime = Timer.getFPGATimestamp();
+        // if((currentTime % 2) > 1 ) {
+        //     wrist.set(-.2);
+        // } else {
+        //     wrist.set(.2);
+        // }
+        wrist.set(0.1 * Math.sin(currentTime * Math.PI));
+    }
     public double getIntakePosition() {
         return wrist.getPosition().getValueAsDouble();
     }

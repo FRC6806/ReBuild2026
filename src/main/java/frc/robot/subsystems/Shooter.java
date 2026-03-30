@@ -9,11 +9,12 @@ import com.ctre.phoenix.motorcontrol.TalonSRXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.NeutralOut;
-import com.ctre.phoenix6.controls.PositionVoltage;
-import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.*;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
@@ -35,7 +36,8 @@ public class Shooter {
     private AnalogInput m_analog = new AnalogInput(1);
     private AnalogInput m2_analog = new AnalogInput(2);
     final PositionVoltage m_request = new PositionVoltage(0).withSlot(0);
-    
+    final MotionMagicVelocityTorqueCurrentFOC velocityTorqueCurrentFOC = new MotionMagicVelocityTorqueCurrentFOC(0);
+
     private InterpolatingDoubleTreeMap shooterMap = new InterpolatingDoubleTreeMap();
     double targetOffsetAngle_Vertical = LimelightHelpers.getTY("bigboy");
     double angleToGoalRadians = Math.toRadians(25  + targetOffsetAngle_Vertical);
@@ -71,36 +73,47 @@ public class Shooter {
         hoodSrx1 = s5;
         hoodSrx2 = s6;
         var talonFXConfigs = new TalonFXConfiguration();
-        talonFXConfigs.ClosedLoopRamps.VoltageClosedLoopRampPeriod = 1;
+
+        /*talonFXConfigs.ClosedLoopRamps.VoltageClosedLoopRampPeriod = 1;
         talonFXConfigs.withCurrentLimits(new CurrentLimitsConfigs()
         .withSupplyCurrentLimit(40).withSupplyCurrentLimitEnable(true)
         .withStatorCurrentLimit(40).withStatorCurrentLimitEnable(true));
+
+
+         */
+        talonFXConfigs.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        talonFXConfigs.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        talonFXConfigs.Slot0 = new Slot0Configs().withKS(0).withKV(0).withKP(0).withKI(0).withKD(0);
+        talonFXConfigs.Feedback.SensorToMechanismRatio = 1;
+        talonFXConfigs.TorqueCurrent.PeakForwardTorqueCurrent = 80.0;
+        talonFXConfigs.TorqueCurrent.PeakReverseTorqueCurrent = -80.0;
+        talonFXConfigs.CurrentLimits.StatorCurrentLimit = 80.0;
+        talonFXConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
+
         var slot0Configs = talonFXConfigs.Slot0;
         //DO NOT CHANGE tuned constants help to adjust and ensure consistency
         slot0Configs.kG = 0; //0
-        slot0Configs.kS = 0.2; //0
-        slot0Configs.kV = 0.122; //0.122
+        slot0Configs.kS = 0; //0
+        slot0Configs.kV = .08; //0.122, .8
         slot0Configs.kA = 0; //0.1
-        slot0Configs.kP = 0.1; //.6
+        slot0Configs.kP = 3; //.6 , 8
         slot0Configs.kI = 0; //0
         slot0Configs.kD = 0; //1.5
         
         var motionMagicConfigs = talonFXConfigs.MotionMagic;
-        motionMagicConfigs.MotionMagicCruiseVelocity = 0;
-        motionMagicConfigs.MotionMagicExpo_kV = 0.5; //.12
+        motionMagicConfigs.MotionMagicExpo_kV = 0.8; //.12 , .5
         motionMagicConfigs.MotionMagicExpo_kA = 0.6; //.1
-        motionMagicConfigs.MotionMagicAcceleration = 0; 
+        motionMagicConfigs.MotionMagicAcceleration = 40; //40
 
-
-        // Apply configurations to the motor
         shooter1.getConfigurator().apply(talonFXConfigs);
         shooter2.getConfigurator().apply(talonFXConfigs);
+        //shooter2.setControl(new Follower(shooter1.getDeviceID(), MotorAlignmentValue.Opposed));
         
-        shooterMap.put(4.0, 46.0);
-        shooterMap.put(5.0, 51.0); //THIS VALUE IS LITERALLY PERFECT DO NOT CHANGE
-        shooterMap.put(6.0, 53.0);
-        shooterMap.put(7.0, 58.0);
-        shooterMap.put(8.0, 61.0);
+        shooterMap.put(4.0, 48.0);
+        shooterMap.put(5.0, 69.625); //THIS VALUE IS LITERALLY PERFECT DO NOT CHANGE
+        shooterMap.put(6.0, 74.625);
+        // shooterMap.put(7.0, 54.0);
+        // shooterMap.put(8.0, 56.0);
 
     }
     
@@ -113,31 +126,21 @@ public class Shooter {
     public void sSetSpeed(double RPS){
         //setting the motor to reach a speed (rps) from imap
         //NOTE: Imap MUST be in RPS to retrieve proper values
-        shooter1.setControl(new VelocityVoltage(RPS));
-        shooter2.setControl(new VelocityVoltage(-RPS));
-        
+        shooter1.setControl(velocityTorqueCurrentFOC.withVelocity(RPS));
+        shooter2.setControl(velocityTorqueCurrentFOC.withVelocity(-RPS));
     }
-
-    public void incSpeed(boolean inc){
-        if (inc){
-            speed++;
-        }
-            // shooter1.setControl(new VelocityVoltage(speed));
-            // shooter2.setControl(new VelocityVoltage(-speed));
-    }
-
-    public void decSpeed(boolean dec){
-        if (dec){
-            speed--;
-        }
-            // shooter1.setControl(new VelocityVoltage(speed));
-            // shooter2.setControl(new VelocityVoltage(-speed));
-    }
+    
     public double getSpeed(){
         return speed;
     }
     
-    public double getSSpeed(){
+    public double getRightSpeed(){
+        //this returns the speed of the motor in rotations per second
+        return shooter1.getVelocity().getValueAsDouble();
+        
+    }
+
+    public double getLeftSpeed(){
         //this returns the speed of the motor in rotations per second
         return shooter1.getVelocity().getValueAsDouble();
         
@@ -166,36 +169,25 @@ public class Shooter {
         double targetVelocity = getRPS();
         
         sSetSpeed(targetVelocity);
-        if (getSSpeed()<targetVelocity-2){
+        if (getRightSpeed()<targetVelocity-2){
             pSetSpeed(0.0);
             fSetSpeed(0.0);          
         }else{
-            pSetSpeed(.75);
-            fSetSpeed(.75);
+            pSetSpeed(.9);
+            fSetSpeed(.6);
         }
     }
             
         public void autoShoot(){
         double targetVelocity = getRPS();
-        double error = Math.abs(getSSpeed()-targetVelocity);
         
-        sSetSpeed(targetVelocity*2+5);
-        if (getSSpeed() >= (targetVelocity*2)+6){
-            //fSetSpeed(.2);
-            pSetSpeed(.4);
-        }
-        if (!isFiring){
-            if (error < 3.0){
-                readyCounter++; 
-            }else{
-                readyCounter = 0;
-            }
-            if (readyCounter > 10){
-                isFiring = true;
-            }
-        }
-        if (isFiring){
-            fSetSpeed(.4);
+        sSetSpeed(targetVelocity);
+        if (getRightSpeed()<targetVelocity-2){
+            pSetSpeed(0.0);
+            fSetSpeed(0.0);          
+        }else{
+            pSetSpeed(.9);
+            fSetSpeed(.6);
         }
     }
     
@@ -230,4 +222,3 @@ public class Shooter {
 
     
 }
-

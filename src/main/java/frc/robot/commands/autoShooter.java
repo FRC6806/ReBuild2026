@@ -29,7 +29,7 @@ public class autoShooter extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    shoot.shoot();
+    shoot.autoShoot();
     intake.setWheelSpeed(-.8);
     //intake.wristShake();
   }
