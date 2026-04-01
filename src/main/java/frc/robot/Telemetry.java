@@ -118,4 +118,35 @@ public class Telemetry {
             m_moduleSpeeds[i].setLength(state.ModuleStates[i].speedMetersPerSecond / (2 * MaxSpeed));
         }
     }
+    public double getXVelocityMotorRPS(SwerveDriveState state) {
+    // Step 1: get robot X velocity in m/s
+        double vx = state.Speeds.vxMetersPerSecond;
+
+        // Step 2: convert m/s → wheel RPS
+        double wheelDiameter = 0.1016; // 4-inch wheel
+        double wheelCircumference = Math.PI * wheelDiameter;
+        double gearRatio = 6.03; // adjust for your module
+
+        double wheelRPS = vx / wheelCircumference;
+
+
+        // Step 3: convert wheel RPS → motor RPS
+        return wheelRPS * gearRatio;
+    }
+    public double getYVelocityMotorRPS(SwerveDriveState state) {
+        double vy = state.Speeds.vyMetersPerSecond;
+
+        double wheelDiameter = 0.1016;
+        double wheelCircumference = Math.PI * wheelDiameter;
+        double gearRatio = 6.03;
+
+        double wheelRPS = vy / wheelCircumference;
+        return wheelRPS * gearRatio;
+    }
+    public double getOmegaRadPerSec(SwerveDriveState state) {
+        return state.Speeds.omegaRadiansPerSecond;
+    }
+
+
+
 }

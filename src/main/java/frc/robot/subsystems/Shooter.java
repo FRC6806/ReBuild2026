@@ -20,7 +20,9 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.LimelightHelpers;
+import frc.robot.Telemetry;
 
 
 public class Shooter {
@@ -28,7 +30,7 @@ public class Shooter {
     private TalonFX shooter2;
     private static TalonFX preshooter;
     private static TalonFX feeder;
-
+    private CommandSwerveDrivetrain drive;
     private TalonSRX hoodSrx1;
     private TalonSRX hoodSrx2;
     private int hoodMode = 0; // 0 = min, 1 = mid, 2 = max
@@ -37,7 +39,7 @@ public class Shooter {
     private AnalogInput m2_analog = new AnalogInput(2);
     final PositionVoltage m_request = new PositionVoltage(0).withSlot(0);
     final MotionMagicVelocityTorqueCurrentFOC velocityTorqueCurrentFOC = new MotionMagicVelocityTorqueCurrentFOC(0);
-
+    private Telemetry telemetry;
     private InterpolatingDoubleTreeMap shooterMap = new InterpolatingDoubleTreeMap();
     double targetOffsetAngle_Vertical = LimelightHelpers.getTY("bigboy");
     double angleToGoalRadians = Math.toRadians(25  + targetOffsetAngle_Vertical);
@@ -55,8 +57,10 @@ public class Shooter {
     
 
 
-    public Shooter(int CanID1, int CanID2, int CanID3, int CanID4, int CanID5, int CanID6){
+    public Shooter(int CanID1, int CanID2, int CanID3, int CanID4, int CanID5, int CanID6, Telemetry t, CommandSwerveDrivetrain d){
         //canbus = new CANBus("rio");
+        telemetry = t;
+        drive = d;
         TalonFX s1 = new TalonFX(CanID1);
         TalonFX s2 = new TalonFX(CanID2);
         TalonFX f = new TalonFX(CanID3);
@@ -94,11 +98,11 @@ public class Shooter {
         //DO NOT CHANGE tuned constants help to adjust and ensure consistency
         slot0Configs.kG = 0; //0
         slot0Configs.kS = 0; //0
-        slot0Configs.kV = .08; //0.122, .8
+        slot0Configs.kV = .1; //0.122, .8
         slot0Configs.kA = 0; //0.1
-        slot0Configs.kP = 3; //.6 , 8
+        slot0Configs.kP = 10; //.6 , 8
         slot0Configs.kI = 0; //0
-        slot0Configs.kD = 0; //1.5
+        slot0Configs.kD = 0.125; //1.5
         
         var motionMagicConfigs = talonFXConfigs.MotionMagic;
         motionMagicConfigs.MotionMagicExpo_kV = 0.8; //.12 , .5
@@ -109,14 +113,15 @@ public class Shooter {
         shooter2.getConfigurator().apply(talonFXConfigs);
         //shooter2.setControl(new Follower(shooter1.getDeviceID(), MotorAlignmentValue.Opposed));
         
-        shooterMap.put(4.0, 48.0);
+        shooterMap.put(4.0, 67.725);
         shooterMap.put(5.0, 69.625); //THIS VALUE IS LITERALLY PERFECT DO NOT CHANGE
-        shooterMap.put(6.0, 74.625);
-        // shooterMap.put(7.0, 54.0);
-        // shooterMap.put(8.0, 56.0);
+        shooterMap.put(6.0, 72.325);
+        shooterMap.put(7.0, 77.0);
+        shooterMap.put(8.0, 80.625);
 
     }
     
+
 
 
     public double getRPS() {
@@ -164,25 +169,15 @@ public class Shooter {
     double readyCounter =0;
     private boolean isFiring = false;
 
+    public double getRobotSpeed(){
+        return telemetry.getXVelocityMotorRPS(drive.getState());
+    }
     
     public void shoot(){
         double targetVelocity = getRPS();
-        
-        sSetSpeed(targetVelocity);
-        if (getRightSpeed()<targetVelocity-2){
-            pSetSpeed(0.0);
-            fSetSpeed(0.0);          
-        }else{
-            pSetSpeed(.9);
-            fSetSpeed(.6);
-        }
-    }
-            
-        public void autoShoot(){
-        double targetVelocity = getRPS();
-        
-        sSetSpeed(targetVelocity);
-        if (getRightSpeed()<targetVelocity-2){
+        double compensateVelocity = targetVelocity - telemetry.getXVelocityMotorRPS(drive.getState());
+        sSetSpeed(compensateVelocity);
+        if ( Math.abs( getRightSpeed() - targetVelocity ) >1 ||  Math.abs( getLeftSpeed() - targetVelocity ) >1 ){
             pSetSpeed(0.0);
             fSetSpeed(0.0);          
         }else{

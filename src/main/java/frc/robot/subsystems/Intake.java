@@ -22,7 +22,7 @@ public class Intake {
     private TalonFX wrist;
     private TalonFX wheel;
     private static final double startPosition = 0; //change later
-    private static final double endPosition = -4; ///change later
+    private static final double endPosition = -3.8; ///change later
     //private final CANBus canbus;
     final PositionVoltage m_request = new PositionVoltage(0).withSlot(0);
 
@@ -34,9 +34,9 @@ public class Intake {
         wrist.setPosition(0);
 
         var talonFXConfigs = new TalonFXConfiguration();
-        talonFXConfigs.withCurrentLimits(new CurrentLimitsConfigs()
-        .withSupplyCurrentLimit(40).withSupplyCurrentLimitEnable(true)
-        .withStatorCurrentLimit(60).withStatorCurrentLimitEnable(true));
+        // talonFXConfigs.withCurrentLimits(new CurrentLimitsConfigs()
+        // .withSupplyCurrentLimit(40).withSupplyCurrentLimitEnable(true)
+        // .withStatorCurrentLimit(60).withStatorCurrentLimitEnable(true));
         var slot0Configs = talonFXConfigs.Slot0;
         talonFXConfigs.MotorOutput.DutyCycleNeutralDeadband = .03;
         slot0Configs.kG = 0.45; //.3
@@ -45,7 +45,7 @@ public class Intake {
         slot0Configs.kA = 0.; //0.1
         slot0Configs.kP = 1; //2.8
         slot0Configs.kI = 0; //00
-        slot0Configs.kD = 0.1;
+        slot0Configs.kD = 0.2;
         slot0Configs.withGravityType(GravityTypeValue.Arm_Cosine);
 
 
@@ -81,7 +81,7 @@ public class Intake {
         if((currentTime % 2) > 1 ) {
             wrist.setControl(m_request.withPosition(-1));
         } else {
-            wrist.setControl(m_request.withPosition(-4));
+            wrist.setControl(m_request.withPosition(-3.8));
         }
 
     }

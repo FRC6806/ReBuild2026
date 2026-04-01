@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.5820120481927713,
-        "y": 4.007680722891567
+        "x": 0.4,
+        "y": 6.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.155831325301205,
-        "y": 3.9967530120481927
+        "x": 2.1748615950907735,
+        "y": 4.910182768966024
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "shootDepot"
     },
     {
       "anchor": {
@@ -20,12 +20,12 @@
         "y": 4.007680722891567
       },
       "prevControl": {
-        "x": 3.0192349397590363,
-        "y": 4.007680722891567
+        "x": 1.3591479322957447,
+        "y": 4.934843479048542
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "shootPreload"
     }
   ],
   "rotationTargets": [],
@@ -45,10 +45,10 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Preload + Depot",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 91.16913932790743
   },
   "useDefaultConstraints": true
 }

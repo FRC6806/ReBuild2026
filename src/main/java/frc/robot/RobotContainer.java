@@ -23,7 +23,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-import frc.robot.commands.autoShooter;
 import frc.robot.commands.runShooter;
 import frc.robot.commands.shootIntake;
 import frc.robot.commands.spinToWin;
@@ -46,7 +45,7 @@ public class RobotContainer {
     private final CommandXboxController operator = new CommandXboxController(1);
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     public final Intake intake = new Intake(16,12);
-    public final Shooter shoot = new Shooter(11,10,14, 15,18, 17);
+    public final Shooter shoot = new Shooter(11,10,14, 15,18, 17, logger, drivetrain);
 
     private final SlewRateLimiter filterX = new SlewRateLimiter(MaxSpeed / (0.3));
     private final SlewRateLimiter filterY = new SlewRateLimiter(MaxSpeed / (0.3));
@@ -91,23 +90,21 @@ public class RobotContainer {
         );
         driver.start().and(driver.back()).onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
         //driver.rightTrigger().toggleOnTrue(new runShooter(shoot, driver, intake));
-        driver.rightTrigger().toggleOnTrue(new shootIntake(shoot, driver, intake));
-        driver.leftTrigger().toggleOnTrue(new spinToWin(drivetrain, ()-> -driver.getLeftY() * MaxSpeed/5,()-> -driver.getLeftX() * MaxSpeed/5));
-        driver.x().toggleOnTrue(new InstantCommand(() -> intake.wristShake()));
-        // driver.y().onTrue(new InstantCommand(() -> shoot.incSpeed(true)));
+        driver.rightTrigger().toggleOnTrue(new runShooter(shoot, driver));
+        driver.leftTrigger().toggleOnTrue(new spinToWin(drivetrain, ()-> -driver.getLeftY() * MaxSpeed/8.5,()-> -driver.getLeftX() * MaxSpeed/8.5, logger));
+        driver.x().toggleOnTrue(Commands.run(()-> intake.wristShake()));
         // driver.a().onFalse(new InstantCommand(() -> shoot.decSpeed(true)));
 
         operator.x().whileTrue(new InstantCommand(() -> intake.setWheelSpeed(-0.75)));
         operator.x().onFalse(new InstantCommand(() -> intake.setWheelSpeed(0)));
         operator.y().onTrue(new InstantCommand(() -> intake.wristExtend()));
         //operator.b().onTrue(new InstantCommand(()-> intake.wristRetract()));
-        operator.rightBumper().whileTrue(Commands.run(()-> intake.wristShake()));
 
         operator.a().whileTrue(new InstantCommand(() -> shoot.pSetSpeed(.5)));
         operator.a().whileFalse(new InstantCommand(() -> shoot.pSetSpeed(0)));
         operator.b().whileTrue(new InstantCommand(() -> shoot.fSetSpeed(.5)));
         operator.b().whileFalse(new InstantCommand(() -> shoot.fSetSpeed(0)));
-        // joystick.x().onFalse(new InstantCommand(() -> shoot.moveHoo(0)));
+        // joystick.x().onFalse(new InstantCommand(() -> shoot.moveHood(0)));
         // joystick.y().whileTrue(new InstantCommand(() -> shoot.moveHood(1)));
         // joystick.y().onFalse(new InstantCommand(() -> shoot.moveHood(0)));
         drivetrain.registerTelemetry(logger::telemeterize);
@@ -115,14 +112,16 @@ public class RobotContainer {
 
     private void registerAutoCommands() {
         NamedCommands.registerCommand("intakeOut", new InstantCommand(() -> intake.wristExtend()));
-        NamedCommands.registerCommand("spinToWin", new spinToWin(drivetrain, ()-> 0, ()-> 0));
-        NamedCommands.registerCommand("autoShoot", new autoShooter(shoot, driver, intake));
+        NamedCommands.registerCommand("spinToWin", new spinToWin(drivetrain, ()-> 0, ()-> 0, logger));
+        NamedCommands.registerCommand("wristShoot", new shootIntake(shoot, driver, intake));
+        NamedCommands.registerCommand("autoShoot", new runShooter(shoot, driver));
+        NamedCommands.registerCommand("runIntake", new InstantCommand(() -> intake.setWheelSpeed(-0.75)));
         
 
     }
 
     public Command getAutonomousCommand() {
-        return new PathPlannerAuto("Blue");
+        return new PathPlannerAuto("Preload");
     }
 
     public void putElastic(){
@@ -132,6 +131,7 @@ public class RobotContainer {
         SmartDashboard.putNumber("Left shoot speed", shoot.getLeftSpeed());
         SmartDashboard.putNumber("Intake position", intake.getIntakePosition());
         SmartDashboard.putNumber("Shoot Inc", shoot.getSpeed());
+        SmartDashboard.putNumber("BotSpeed", shoot.getRobotSpeed());
 
     }
 }
