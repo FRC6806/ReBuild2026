@@ -172,7 +172,9 @@ public class Shooter {
     public double getRobotSpeed(){
         return telemetry.getXVelocityMotorRPS(drive.getState());
     }
-    
+    public void loadUp(){
+        sSetSpeed(65);
+    }
     public void shoot(){
         double targetVelocity = getRPS();
         double compensateVelocity = targetVelocity - telemetry.getXVelocityMotorRPS(drive.getState());

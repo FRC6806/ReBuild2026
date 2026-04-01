@@ -48,7 +48,7 @@
   "folder": "Preload + Depot",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 91.16913932790743
+    "rotation": 100.0
   },
   "useDefaultConstraints": true
 }

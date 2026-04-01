@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 0.4,
-        "y": 5.0
+        "x": 0.5,
+        "y": 5.018493975903613
       },
       "prevControl": {
-        "x": 1.7492100726487334,
-        "y": 4.562031134896905
+        "x": 1.8492100726487335,
+        "y": 4.580525110800519
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 88.51213247117225
+    "rotation": 100.0
   },
   "reversed": false,
   "folder": "Preload + Depot",

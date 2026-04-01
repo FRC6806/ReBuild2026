@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.4,
-        "y": 5.0
+        "x": 0.5,
+        "y": 5.018493975903613
       },
       "prevControl": null,
       "nextControl": {
-        "x": 0.39720149103043867,
-        "y": 5.407652830167996
+        "x": 0.49720149103043865,
+        "y": 5.42614680607161
       },
       "isLocked": false,
       "linkedName": "startDepot"
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 91.16913932790743
+    "rotation": 100.0
   },
   "reversed": false,
   "folder": "Preload + Depot",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 88.51213247117225
+    "rotation": 100.0
   },
   "useDefaultConstraints": false
 }

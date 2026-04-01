@@ -81,9 +81,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "deadline",
           "data": {
-            "pathName": "shootDepot"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "shootDepot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "loadShoot"
+                }
+              }
+            ]
           }
         },
         {
@@ -100,6 +113,12 @@
                 "type": "named",
                 "data": {
                   "name": "spinToWin"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "loadShoot"
                 }
               }
             ]
