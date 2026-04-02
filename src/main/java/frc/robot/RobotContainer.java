@@ -112,12 +112,11 @@ public class RobotContainer {
 
     private void registerAutoCommands() {
         NamedCommands.registerCommand("intakeOut", new InstantCommand(() -> intake.wristExtend()));
+        NamedCommands.registerCommand("runIntake", new InstantCommand(() -> intake.setWheelSpeed(-0.75)));
         NamedCommands.registerCommand("spinToWin", new spinToWin(drivetrain, ()-> 0, ()-> 0, logger));
         NamedCommands.registerCommand("wristShoot", new shootIntake(shoot, driver, intake));
         NamedCommands.registerCommand("autoShoot", new runShooter(shoot, driver));
         NamedCommands.registerCommand("loadShoot", new InstantCommand (() -> shoot.loadUp()));
-        NamedCommands.registerCommand("runIntake", new InstantCommand(() -> intake.setWheelSpeed(-0.75)));
-        
 
     }
 

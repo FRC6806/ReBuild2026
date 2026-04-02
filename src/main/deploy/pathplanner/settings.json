@@ -3,7 +3,7 @@
   "robotLength": 0.81,
   "holonomicMode": true,
   "pathFolders": [
-    "Middle Bump",
+    "Left Middle Bump",
     "Preload + Depot"
   ],
   "autoFolders": [],
