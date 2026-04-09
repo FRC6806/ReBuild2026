@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.2,
-        "y": 6.0
+        "x": 3.254180722891566,
+        "y": 2.608933734939759
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9748615950907735,
-        "y": 4.910182768966024
+        "x": 4.248602409638554,
+        "y": 2.1991445783132533
       },
       "isLocked": false,
-      "linkedName": "end depot"
+      "linkedName": "HP go"
     },
     {
       "anchor": {
-        "x": 2.3,
-        "y": 4.007680722891567
+        "x": 7.018777108433734,
+        "y": 3.8328373493975905
       },
       "prevControl": {
-        "x": 1.273720221452371,
-        "y": 4.934843479048542
+        "x": 5.860439759036143,
+        "y": 2.352132530120482
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "shootPreload"
+      "linkedName": "HP mid"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -0.33174433399141506
+    "rotation": -31.56181184164931
   },
   "reversed": false,
-  "folder": "Preload + Depot",
+  "folder": "HP Middle Bump",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 89.41789774063218
+    "rotation": -73.72373705794004
   },
   "useDefaultConstraints": true
 }

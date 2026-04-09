@@ -12,16 +12,16 @@
         "y": 3.9967530120481927
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "START"
     },
     {
       "anchor": {
-        "x": 2.3854277108433735,
-        "y": 4.007680722891567
+        "x": 2.3,
+        "y": 4.0
       },
       "prevControl": {
-        "x": 3.0192349397590363,
-        "y": 4.007680722891567
+        "x": 2.933807228915663,
+        "y": 4.0
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,7 +42,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -0.33174433399141506
   },
   "reversed": false,
   "folder": "Preload + Depot",

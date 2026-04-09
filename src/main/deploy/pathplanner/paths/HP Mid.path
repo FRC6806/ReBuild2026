@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.2,
-        "y": 6.0
+        "x": 7.018777108433734,
+        "y": 3.8328373493975905
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9748615950907735,
-        "y": 4.910182768966024
+        "x": 7.66940061974082,
+        "y": 3.319847615210281
       },
       "isLocked": false,
-      "linkedName": "end depot"
+      "linkedName": "HP mid"
     },
     {
       "anchor": {
-        "x": 2.3,
-        "y": 4.007680722891567
+        "x": 7.685367469879518,
+        "y": 3.319234939759036
       },
       "prevControl": {
-        "x": 1.273720221452371,
-        "y": 4.934843479048542
+        "x": 6.984543352858454,
+        "y": 3.8635436333458983
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "shootPreload"
+      "linkedName": "Mid Done"
     }
   ],
   "rotationTargets": [],
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 2.0,
+    "maxAcceleration": 2.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -0.33174433399141506
+    "rotation": -30.668926649715036
   },
   "reversed": false,
-  "folder": "Preload + Depot",
+  "folder": "HP Middle Bump",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 89.41789774063218
+    "rotation": -31.56181184164931
   },
-  "useDefaultConstraints": true
+  "useDefaultConstraints": false
 }

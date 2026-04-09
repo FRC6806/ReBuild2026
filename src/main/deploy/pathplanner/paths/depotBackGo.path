@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.2,
-        "y": 6.0
+        "x": 7.597945783132529,
+        "y": 4.8108674698795175
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9748615950907735,
-        "y": 4.910182768966024
+        "x": 7.226257521327153,
+        "y": 4.977228269719506
       },
       "isLocked": false,
-      "linkedName": "end depot"
+      "linkedName": "depoBackBump"
     },
     {
       "anchor": {
-        "x": 2.3,
-        "y": 4.007680722891567
+        "x": 6.073530120481928,
+        "y": 5.4883855421686745
       },
       "prevControl": {
-        "x": 1.273720221452371,
-        "y": 4.934843479048542
+        "x": 6.301932562619536,
+        "y": 5.386737500251592
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "shootPreload"
+      "linkedName": "depotBackGo"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -0.33174433399141506
+    "rotation": 47.60256220227835
   },
   "reversed": false,
-  "folder": "Preload + Depot",
+  "folder": "Depo Middle Bump",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 89.41789774063218
+    "rotation": 48.468229258917106
   },
   "useDefaultConstraints": true
 }

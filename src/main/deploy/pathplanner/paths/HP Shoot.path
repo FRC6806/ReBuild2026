@@ -3,16 +3,16 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.2,
-        "y": 6.0
+        "x": 5.669204819277109,
+        "y": 2.576150602409639
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9748615950907735,
-        "y": 4.910182768966024
+        "x": 4.385198795180723,
+        "y": 2.4122349397590366
       },
       "isLocked": false,
-      "linkedName": "end depot"
+      "linkedName": "HP Back Go"
     },
     {
       "anchor": {
@@ -20,8 +20,8 @@
         "y": 4.007680722891567
       },
       "prevControl": {
-        "x": 1.273720221452371,
-        "y": 4.934843479048542
+        "x": 2.682638554216868,
+        "y": 2.6712530120481937
       },
       "nextControl": null,
       "isLocked": false,
@@ -45,10 +45,10 @@
     "rotation": -0.33174433399141506
   },
   "reversed": false,
-  "folder": "Preload + Depot",
+  "folder": "HP Middle Bump",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 89.41789774063218
+    "rotation": -36.41637851988598
   },
   "useDefaultConstraints": true
 }

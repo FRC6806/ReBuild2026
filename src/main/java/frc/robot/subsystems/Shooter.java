@@ -41,6 +41,11 @@ public class Shooter {
     final MotionMagicVelocityTorqueCurrentFOC velocityTorqueCurrentFOC = new MotionMagicVelocityTorqueCurrentFOC(0);
     private Telemetry telemetry;
     private InterpolatingDoubleTreeMap shooterMap = new InterpolatingDoubleTreeMap();
+
+    private double lastKnownDistance = 0.0;
+
+
+
     double targetOffsetAngle_Vertical = LimelightHelpers.getTY("bigboy");
     double angleToGoalRadians = Math.toRadians(25  + targetOffsetAngle_Vertical);
     double tx = LimelightHelpers.getTargetPose3d_CameraSpace("limelight-bigboy").getX();
@@ -102,7 +107,7 @@ public class Shooter {
         slot0Configs.kA = 0; //0.1
         slot0Configs.kP = 10; //.6 , 8
         slot0Configs.kI = 0; //0
-        slot0Configs.kD = 0.125; //1.5
+        slot0Configs.kD = 0.0; //1.5
         
         var motionMagicConfigs = talonFXConfigs.MotionMagic;
         motionMagicConfigs.MotionMagicExpo_kV = 0.8; //.12 , .5
@@ -113,11 +118,13 @@ public class Shooter {
         shooter2.getConfigurator().apply(talonFXConfigs);
         //shooter2.setControl(new Follower(shooter1.getDeviceID(), MotorAlignmentValue.Opposed));
         
-        shooterMap.put(4.0, 67.725);
-        shooterMap.put(5.0, 69.625); //THIS VALUE IS LITERALLY PERFECT DO NOT CHANGE
-        shooterMap.put(6.0, 72.325);
-        shooterMap.put(7.0, 77.0);
-        shooterMap.put(8.0, 80.625);
+        shooterMap.put(4.0, 58.48);
+        shooterMap.put(5.0, 63.31); 
+        shooterMap.put(6.0, 66.29);
+        shooterMap.put(7.0, 68.55);
+        shooterMap.put(8.0, 72.46);
+        shooterMap.put(9.0, 77.90);
+        shooterMap.put(10.0, 80.0);
 
     }
     
@@ -173,12 +180,24 @@ public class Shooter {
         return telemetry.getXVelocityMotorRPS(drive.getState());
     }
     public void loadUp(){
-        sSetSpeed(65);
+        sSetSpeed(50);
     }
     public void shoot(){
         double targetVelocity = getRPS();
         double compensateVelocity = targetVelocity - telemetry.getXVelocityMotorRPS(drive.getState());
         sSetSpeed(compensateVelocity);
+        if ( Math.abs( getRightSpeed() - targetVelocity ) >1 ||  Math.abs( getLeftSpeed() - targetVelocity ) >1 ){
+            pSetSpeed(0.0);
+            fSetSpeed(0.0);          
+        }else{
+            pSetSpeed(.9);
+            fSetSpeed(.6);
+        }
+    }
+
+    public void dynamicShoot() {
+        double targetVelocity = SmartDashboard.getNumber("Dynamic Shooter Speed", 0);
+        sSetSpeed(targetVelocity);
         if ( Math.abs( getRightSpeed() - targetVelocity ) >1 ||  Math.abs( getLeftSpeed() - targetVelocity ) >1 ){
             pSetSpeed(0.0);
             fSetSpeed(0.0);          
@@ -198,7 +217,13 @@ public class Shooter {
     public double getDistance(){
         double tx = LimelightHelpers.getTargetPose3d_CameraSpace("limelight-bigboy").getX();
         double tz = LimelightHelpers.getTargetPose3d_CameraSpace("limelight-bigboy").getZ();
-        return Math.sqrt((tx* tx) +  (tz * tz)) * 3.28;
+        double distance = Math.sqrt((tx* tx) +  (tz * tz)) * 3.28;
+        if(distance < 0.10)  {
+            distance = lastKnownDistance;
+        } else {
+        lastKnownDistance = distance;
+        }
+        return distance;
 
     }
 

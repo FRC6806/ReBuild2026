@@ -42,9 +42,9 @@ public class spinToWin extends Command {
   private final SwerveRequest.RobotCentric drive = new SwerveRequest.RobotCentric();
   private DoubleSupplier xVelocity, yVelocity;
   // --- Motion Compensation Constants ---
-private static final double kP_TURN = 0.25;
+private static final double kP_TURN = .15;
 private static final double kI_TURN = 0.0;
-private static final double kD_TURN = 0.001;
+private static final double kD_TURN = 0.02;
 
 private static final double kV_Y = 0.05;   // lateral velocity compensation
 private static final double kW_OMEGA = 0.02; // rotational velocity compensation
@@ -81,7 +81,6 @@ public double rotate2() {
     if (!LimelightHelpers.getTV("limelight-bigboy")) {
         return 0;
     }
-    swerve.getPigeon2().getYaw().getValue();
 
     // Continuous smooth rotation
     double output = turnPID.calculate(tx, 0);

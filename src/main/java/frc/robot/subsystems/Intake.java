@@ -9,6 +9,7 @@ import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.*;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.Timer;
@@ -22,7 +23,7 @@ public class Intake {
     private TalonFX wrist;
     private TalonFX wheel;
     private static final double startPosition = 0; //change later
-    private static final double endPosition = -3.8; ///change later
+    private static final double endPosition = -4.2; ///change later
     //private final CANBus canbus;
     final PositionVoltage m_request = new PositionVoltage(0).withSlot(0);
 
@@ -31,7 +32,7 @@ public class Intake {
         //canbus = new CANBus("rio");
         wheel = new TalonFX(CanID1);
         wrist = new TalonFX(CanID2);
-        wrist.setPosition(0);
+        zeroIntake();
 
         var talonFXConfigs = new TalonFXConfiguration();
         // talonFXConfigs.withCurrentLimits(new CurrentLimitsConfigs()
@@ -39,11 +40,12 @@ public class Intake {
         // .withStatorCurrentLimit(60).withStatorCurrentLimitEnable(true));
         var slot0Configs = talonFXConfigs.Slot0;
         talonFXConfigs.MotorOutput.DutyCycleNeutralDeadband = .03;
-        slot0Configs.kG = 0.45; //.3
+        talonFXConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        slot0Configs.kG = 0.9; //.3
         slot0Configs.kS = 0; //.00
         slot0Configs.kV = 0.0; // 0.01
         slot0Configs.kA = 0.; //0.1
-        slot0Configs.kP = 1; //2.8
+        slot0Configs.kP = 2; //2.8
         slot0Configs.kI = 0; //00
         slot0Configs.kD = 0.2;
         slot0Configs.withGravityType(GravityTypeValue.Arm_Cosine);
@@ -65,6 +67,11 @@ public class Intake {
         wheel.set(speed);
     }
 
+    public void zeroIntake() {
+        wrist.setPosition(0);
+
+    }
+
     public void wristExtend(){
         wrist.setControl(m_request.withPosition(endPosition));
     }
@@ -79,9 +86,9 @@ public class Intake {
     public void wristShake() {
         double currentTime = Timer.getFPGATimestamp();
         if((currentTime % 2) > 1 ) {
-            wrist.setControl(m_request.withPosition(-1));
+            wrist.setControl(m_request.withPosition(-2.4));
         } else {
-            wrist.setControl(m_request.withPosition(-3.8));
+            wrist.setControl(m_request.withPosition(-4.2));
         }
 
     }

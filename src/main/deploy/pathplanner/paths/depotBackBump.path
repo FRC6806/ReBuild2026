@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.2,
-        "y": 6.0
+        "x": 6.073530120481928,
+        "y": 5.4883855421686745
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.9748615950907735,
-        "y": 4.910182768966024
+        "x": 5.073644578313252,
+        "y": 6.182295180722892
       },
       "isLocked": false,
-      "linkedName": "end depot"
+      "linkedName": "depotBackGo"
     },
     {
       "anchor": {
         "x": 2.3,
-        "y": 4.007680722891567
+        "y": 4.0
       },
       "prevControl": {
-        "x": 1.273720221452371,
-        "y": 4.934843479048542
+        "x": 3.1612951807228917,
+        "y": 5.302614457831326
       },
       "nextControl": null,
       "isLocked": false,
@@ -45,10 +45,10 @@
     "rotation": -0.33174433399141506
   },
   "reversed": false,
-  "folder": "Preload + Depot",
+  "folder": "Depo Middle Bump",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 89.41789774063218
+    "rotation": 47.60256220227835
   },
   "useDefaultConstraints": true
 }

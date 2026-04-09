@@ -47,8 +47,8 @@ public class RobotContainer {
     public final Intake intake = new Intake(16,12);
     public final Shooter shoot = new Shooter(11,10,14, 15,18, 17, logger, drivetrain);
 
-    private final SlewRateLimiter filterX = new SlewRateLimiter(MaxSpeed / (0.3));
-    private final SlewRateLimiter filterY = new SlewRateLimiter(MaxSpeed / (0.3));
+    private final SlewRateLimiter filterX = new SlewRateLimiter(MaxSpeed / .63);
+    private final SlewRateLimiter filterY = new SlewRateLimiter(MaxSpeed / .63);
 
     private double maxSpeed = MaxSpeed;
 
@@ -58,6 +58,9 @@ public class RobotContainer {
     public RobotContainer() {
         configureBindings();
         registerAutoCommands();
+
+        SmartDashboard.putData(Commands.runOnce(()-> intake.zeroIntake()).ignoringDisable(true).withName("Zero Intake"));
+        
     }
 
     private void configureBindings() {
@@ -91,13 +94,13 @@ public class RobotContainer {
         driver.start().and(driver.back()).onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
         //driver.rightTrigger().toggleOnTrue(new runShooter(shoot, driver, intake));
         driver.rightTrigger().toggleOnTrue(new runShooter(shoot, driver));
-        driver.leftTrigger().toggleOnTrue(new spinToWin(drivetrain, ()-> -driver.getLeftY() * MaxSpeed/8.5,()-> -driver.getLeftX() * MaxSpeed/8.5, logger));
+        driver.leftTrigger().toggleOnTrue(new spinToWin(drivetrain, ()-> -driver.getLeftY() * MaxSpeed/5,()-> -driver.getLeftX() * MaxSpeed/5, logger));
         driver.x().toggleOnTrue(Commands.run(()-> intake.wristShake()));
         // driver.a().onFalse(new InstantCommand(() -> shoot.decSpeed(true)));
 
-        operator.x().whileTrue(new InstantCommand(() -> intake.setWheelSpeed(-0.75)));
+        operator.x().whileTrue(new InstantCommand(() -> intake.setWheelSpeed(-0.9)));
         operator.x().onFalse(new InstantCommand(() -> intake.setWheelSpeed(0)));
-        operator.y().onTrue(new InstantCommand(() -> intake.wristExtend()));
+        operator.y().onTrue(Commands.run(()-> intake.wristExtend()));
         //operator.b().onTrue(new InstantCommand(()-> intake.wristRetract()));
 
         operator.a().whileTrue(new InstantCommand(() -> shoot.pSetSpeed(.5)));
@@ -112,7 +115,7 @@ public class RobotContainer {
 
     private void registerAutoCommands() {
         NamedCommands.registerCommand("intakeOut", new InstantCommand(() -> intake.wristExtend()));
-        NamedCommands.registerCommand("runIntake", new InstantCommand(() -> intake.setWheelSpeed(-0.75)));
+        NamedCommands.registerCommand("runIntake", new InstantCommand(() -> intake.setWheelSpeed(-1)));
         NamedCommands.registerCommand("spinToWin", new spinToWin(drivetrain, ()-> 0, ()-> 0, logger));
         NamedCommands.registerCommand("wristShoot", new shootIntake(shoot, driver, intake));
         NamedCommands.registerCommand("autoShoot", new runShooter(shoot, driver));
@@ -121,7 +124,7 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return new PathPlannerAuto("Preload");
+        return new PathPlannerAuto("Depot");
     }
 
     public void putElastic(){
